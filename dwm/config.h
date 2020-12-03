@@ -36,7 +36,7 @@ static const unsigned int alphas[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { ">_", "", "", "", "", "", "", "", "" };
+static const char *tags[] = { "", "", "", "", "", "", "", "", "" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -59,9 +59,9 @@ static const int resizehints = 1;    /* 1 means respect size hints in tiled resi
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "[=]",      tile },    /* first entry is default */
-	{ "~~",      NULL },    /* no layout function means floating behavior */
-	{ "<>",   monocle },
+	{ "",      tile },    /* first entry is default */
+	{ "",      NULL },    /* no layout function means floating behavior */
+	{ "",   monocle },
 };
 
 /* key definitions */
@@ -73,7 +73,7 @@ static const Layout layouts[] = {
 	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
-#define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
+#define SHCMD(cmd) { .v = (const char*[]){ "/bin/zsh", "-c", cmd, NULL } }
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
@@ -114,8 +114,8 @@ static Key keys[] = {
 	{ MODKEY,                       XK_b,      togglebar,      {0} }, // 是否隐藏状态栏
 	{ MODKEY,                       XK_j,      focusstackvis,  {.i = +1 } }, // 不同窗口切换
 	{ MODKEY,                       XK_k,      focusstackvis,  {.i = -1 } }, // 不同窗口切换
-	{ MODKEY,                       XK_h,      setmfact,       {.f = +0.05} }, // 调整窗口大小
-	{ MODKEY,                       XK_l,      setmfact,       {.f = -0.05} }, // 调整窗口大小
+	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} }, // 调整窗口大小
+	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} }, // 调整窗口大小
 	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } }, // 窗口重排
 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } }, // 窗口重排
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } }, // 水平平铺窗口
