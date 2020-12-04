@@ -12,8 +12,8 @@ static const int smartgaps          = 0;        /* 1 means no outer gap when the
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const Bool viewontag         = True;     /* Switch view on tag switch */
-static const char *fonts[]          = { "Noto Sans Mono:size=16", "Symbola:size=16" };
-static const char dmenufont[]       = "Noto Sans Mono:size=16";
+static const char *fonts[]          = { "Noto Sans Mono:size=13", "Symbola:size=13" };
+static const char dmenufont[]       = "Noto Sans Mono:size=13";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -102,44 +102,37 @@ static Key keys[] = {
 	{ 0,           XF86XK_MonBrightnessUp,     spawn,          {.v = backlight_up } },
 	{ 0,           XF86XK_MonBrightnessDown,   spawn,          {.v = backlight_down } },
 
-	{ MODKEY|ControlMask,           XK_n,      spawn,          {.v = network_manager } }, // 网络控制
-	{ MODKEY|ControlMask,           XK_s,      spawn,          {.v = suspend } }, // 待机
-	{ MODKEY|ControlMask,           XK_l,      spawn,           {.v = lockscreen } }, // 锁屏
-	{ MODKEY|ControlMask,           XK_q,      quit,           {0} }, // 退出dwm
-
-	{ MODKEY,                       XK_space,      spawn,          {.v = dmenucmd } },
-	{ MODKEY,                       XK_Return,      spawn,          {.v = termcmd } },
-	{ MODKEY,                       XK_p,     togglescratch,  {.v = scratchpadcmd } }, // 弹出一个临时窗口
-	{ MODKEY,                       XK_s,      spawn,          {.v = screenshotcmd } }, // 屏幕截图
+	{ MODKEY,                       XK_space,  spawn,          {.v = dmenucmd } },
+	{ MODKEY,                       XK_Return, spawn,          {.v = termcmd } },
+	{ MODKEY,                       XK_Tab,    view,           {0} },  // 切换最近两个tag
+	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } }, // 水平平铺窗口
 	{ MODKEY,                       XK_b,      togglebar,      {0} }, // 是否隐藏状态栏
+	{ MODKEY,                       XK_c,      killclient,     {0} }, // 关闭一个窗口
+	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } }, // 窗口重排
+	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} }, // 设置窗口模式
+	{ MODKEY,                       XK_g,      togglegaps,     {0} }, // 显示/隐藏gap
+	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} }, // 调整窗口大小
+	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } }, // 窗口重排
 	{ MODKEY,                       XK_j,      focusstackvis,  {.i = +1 } }, // 不同窗口切换
 	{ MODKEY,                       XK_k,      focusstackvis,  {.i = -1 } }, // 不同窗口切换
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} }, // 调整窗口大小
-	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} }, // 调整窗口大小
-	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } }, // 窗口重排
-	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } }, // 窗口重排
-	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } }, // 水平平铺窗口
-	{ MODKEY,                       XK_Tab,    view,           {0} },  // 切换最近两个tag
-	{ MODKEY,                       XK_c,      killclient,     {0} }, // 关闭一个窗口
+	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} }, // 设置窗口模式
+	{ MODKEY,                       XK_o,      hide,           {0} }, // 隐藏窗口
+	{ MODKEY,                       XK_s,      show,           {0} }, // 显示隐藏的窗口
+	{ MODKEY,                       XK_p,      togglescratch,  {.v = scratchpadcmd } }, // 弹出一个临时窗口
+	{ MODKEY,                       XK_s,      spawn,          {.v = screenshotcmd } }, // 屏幕截图
+	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} }, // 设置窗口模式
 
-    // 设置窗口模式
-	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
-	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
-	{ MODKEY,                       XK_g,      togglegaps,     {0} }, // 显示/隐藏gap
+	{ MODKEY|ControlMask,           XK_l,      spawn,          {.v = lockscreen } }, // 锁屏
+	{ MODKEY|ControlMask,           XK_n,      spawn,          {.v = network_manager } }, // 网络控制
+	{ MODKEY|ControlMask,           XK_q,      quit,           {0} }, // 退出dwm
+	{ MODKEY|ControlMask,           XK_s,      spawn,          {.v = suspend } }, // 待机
 
-	{ MODKEY|ShiftMask,             XK_g,      defaultgaps,    {0} }, // 恢复默认gap
-	{ MODKEY|ShiftMask,             XK_j,      focusstackhid,  {.i = +1 } }, // 不同tag切换
-	{ MODKEY|ShiftMask,             XK_k,      focusstackhid,  {.i = -1 } }, // 不同tag切换
-	{ MODKEY|ShiftMask,             XK_h,      hide,           {0} }, // 隐藏窗口
-	{ MODKEY|ShiftMask,             XK_s,      show,           {0} }, // 显示隐藏的窗口
-	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } }, // 平铺所有窗口
 	{ MODKEY|ShiftMask,             XK_Return, zoom,           {0} }, // 当前和上一个窗口切换
-
-	{ MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
-	{ MODKEY,                       XK_period, focusmon,       {.i = +1 } },
-	{ MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
-	{ MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
+	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } }, // 平铺所有窗口
+	{ MODKEY|ShiftMask,             XK_g,      defaultgaps,    {0} }, // 恢复默认gap
+	{ MODKEY|ShiftMask,             XK_j,      focusstackhid,  {.i = +1 } }, // 切换隐藏的tag
+	{ MODKEY|ShiftMask,             XK_k,      focusstackhid,  {.i = -1 } }, // 切换隐藏的tag
 
     // 1-9 tag 切换
 	TAGKEYS(                        XK_1,                      0)
@@ -152,6 +145,11 @@ static Key keys[] = {
 	TAGKEYS(                        XK_8,                      7)
 	TAGKEYS(                        XK_9,                      8)
 
+
+	// { MODKEY,                       XK_comma,  focusmon,       {.i = -1 } },
+	// { MODKEY,                       XK_period, focusmon,       {.i = +1 } },
+	// { MODKEY|ShiftMask,             XK_comma,  tagmon,         {.i = -1 } },
+	// { MODKEY|ShiftMask,             XK_period, tagmon,         {.i = +1 } },
 
 	// { MODKEY|Mod4Mask,              XK_h,      incrgaps,       {.i = +1 } },
 	// { MODKEY|Mod4Mask,              XK_l,      incrgaps,       {.i = -1 } },
