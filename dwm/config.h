@@ -3,11 +3,11 @@
 
 /* appearance */
 static const unsigned int borderpx  = 3;        /* border pixel of windows */
-static const unsigned int snap      = 5;       /* snap pixel */
-static const unsigned int gappih    = 5;       /* horiz inner gap between windows */
-static const unsigned int gappiv    = 5;       /* vert inner gap between windows */
-static const unsigned int gappoh    = 5;       /* horiz outer gap between windows and screen edge */
-static const unsigned int gappov    = 5;       /* vert outer gap between windows and screen edge */
+static const unsigned int snap      = 0;       /* snap pixel */
+static const unsigned int gappih    = 3;       /* horiz inner gap between windows */
+static const unsigned int gappiv    = 3;       /* vert inner gap between windows */
+static const unsigned int gappoh    = 3;       /* horiz outer gap between windows and screen edge */
+static const unsigned int gappov    = 3;       /* vert outer gap between windows and screen edge */
 static const int smartgaps          = 0;        /* 1 means no outer gap when there is only one window */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
@@ -38,30 +38,25 @@ static const unsigned int alphas[][3]      = {
 /* tagging */
 static const char *tags[] = { "", "", "", "", "", "", "", "", "" };
 
-static const Rule rules[] = {
+static const Rule rules[0] = {
 	/* xprop(1):
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class                  instance                title       tags mask     isfloating   monitor */
-	{ "Gimp",                 "gimp",                 NULL,       0,            1,           -1 },
-    // { "Google-chrome",        "google-chrome",        NULL,       1 << 8,       0,           -1 },
-    // { "Firefox",        "firefox",        NULL,       1 << 8,       0,           -1 },
-    // { "Zathura",             "zathura",               NULL,       1 << 7,       0,           -1 },
-	// { "Vlc",                  "vlc",                  NULL,       1 << 6,       0,           -1 },
-	// { "St",                   "st",                   NULL,       1 << 1,       0,           -1 },
+	// { "Gimp",                 "gimp",                 NULL,       0,            1,           -1 },
 };
 
 /* layout(s) */
-static const float mfact     = 0.55; /* factor of master area size [0.05..0.95] */
+static const float mfact     = 0.5; /* factor of master area size [0.05..0.95] */
 static const int nmaster     = 1;    /* number of clients in master area */
-static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
+static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
 
 static const Layout layouts[] = {
 	/* symbol     arrange function */
-	{ "",      tile },    /* first entry is default */
-	{ "",      NULL },    /* no layout function means floating behavior */
-	{ "",   monocle },
+	{ "[=]",      tile },    /* first entry is default */
+	{ "[~]",      NULL },    /* no layout function means floating behavior */
+	{ "",   monocle },
 };
 
 /* key definitions */
@@ -94,6 +89,7 @@ static const char *lockscreen[] = {"slock", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
+	{ MODKEY|ShiftMask|ControlMask, XK_q,      quit,           {0} }, // 退出dwm
 
     // 音量和屏幕亮度控制
 	{ 0,          XF86XK_AudioRaiseVolume,     spawn,          {.v = volupscript } },
@@ -108,24 +104,23 @@ static Key keys[] = {
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } }, // 水平平铺窗口
 	{ MODKEY,                       XK_b,      togglebar,      {0} }, // 是否隐藏状态栏
 	{ MODKEY,                       XK_c,      killclient,     {0} }, // 关闭一个窗口
+	{ MODKEY,                       XK_e,      incnmaster,     {.i = +1 } }, // 窗口重排
 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } }, // 窗口重排
 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} }, // 设置窗口模式
 	{ MODKEY,                       XK_g,      togglegaps,     {0} }, // 显示/隐藏gap
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} }, // 调整窗口大小
-	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } }, // 窗口重排
+	{ MODKEY,                       XK_i,      show,           {0} }, // 显示隐藏的窗口
 	{ MODKEY,                       XK_j,      focusstackvis,  {.i = +1 } }, // 不同窗口切换
 	{ MODKEY,                       XK_k,      focusstackvis,  {.i = -1 } }, // 不同窗口切换
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} }, // 调整窗口大小
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} }, // 设置窗口模式
 	{ MODKEY,                       XK_o,      hide,           {0} }, // 隐藏窗口
-	{ MODKEY,                       XK_s,      show,           {0} }, // 显示隐藏的窗口
 	{ MODKEY,                       XK_p,      togglescratch,  {.v = scratchpadcmd } }, // 弹出一个临时窗口
 	{ MODKEY,                       XK_s,      spawn,          {.v = screenshotcmd } }, // 屏幕截图
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} }, // 设置窗口模式
 
 	{ MODKEY|ControlMask,           XK_l,      spawn,          {.v = lockscreen } }, // 锁屏
 	{ MODKEY|ControlMask,           XK_n,      spawn,          {.v = network_manager } }, // 网络控制
-	{ MODKEY|ControlMask,           XK_q,      quit,           {0} }, // 退出dwm
 	{ MODKEY|ControlMask,           XK_s,      spawn,          {.v = suspend } }, // 待机
 
 	{ MODKEY|ShiftMask,             XK_Return, zoom,           {0} }, // 当前和上一个窗口切换

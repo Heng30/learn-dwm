@@ -15,3 +15,4 @@
 - [DWM initial setup and config. Icons, Bar Scripts, Keybindings, and Theming](https://www.youtube.com/watch?v=zaRzOEoyR4s)
 - [HiDPI](https://wiki.archlinux.org/index.php/HiDPI_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87))
 - [Set Keyboard Repeat Delay and Rate](https://wiki.gentoo.org/wiki/Set_Keyboard_Repeat_Delay_and_Rate)
+- [LukeSmithxyz/dwmblocks](https://github.com/lukesmithxyz/dwmblocks)
