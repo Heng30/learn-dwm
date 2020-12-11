@@ -5,7 +5,7 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "Noto Sans Mono:pixelsize=21:antialias=true:autohint=true";
+static char *font = "DejaVuSansMono:pixelsize=21:antialias=true:autohint=true";
 static int borderpx = 2;
 
 /*
@@ -16,7 +16,7 @@ static int borderpx = 2;
  * 4: value of shell in /etc/passwd
  * 5: value of shell in config.h
  */
-static char *shell = "/bin/sh";
+static char *shell = "/bin/zsh";
 char *utmp = NULL;
 /* scroll program: to enable use a string like "scroll" */
 char *scroll = NULL;
@@ -203,6 +203,8 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
 	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
+	{ TERMMOD,              XK_U,           kscrollup,      {.i = -1} },
+	{ TERMMOD,              XK_D,           kscrolldown,    {.i = -1} },
 };
 
 /*

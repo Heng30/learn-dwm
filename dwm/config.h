@@ -12,8 +12,8 @@ static const int smartgaps          = 0;        /* 1 means no outer gap when the
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const Bool viewontag         = True;     /* Switch view on tag switch */
-static const char *fonts[]          = { "Noto Sans Mono:size=13", "Symbola:size=13" };
-static const char dmenufont[]       = "Noto Sans Mono:size=13";
+static const char *fonts[]          = { "DejaVuSansMono:size=13", "Symbola:size=13" };
+static const char dmenufont[]       = "DejaVuSansMono:size=13";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -36,7 +36,7 @@ static const unsigned int alphas[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "", "", "", "", "", "", "", "", "" };
+static const char *tags[] = { "", "", "", "", "", "", "", "", "" };
 
 static const Rule rules[0] = {
 	/* xprop(1):
@@ -83,9 +83,12 @@ static const char *voltogglescript[] = {"/home/blue/.dwm/vol-toggle.sh", NULL};
 static const char *backlight_up[] = {"/home/blue/.dwm/backlight-up.sh", NULL};
 static const char *backlight_down[] = {"/home/blue/.dwm/backlight-down.sh", NULL};
 static const char *network_manager[] = {"/home/blue/.dwm/network-manager.sh", NULL};
+static const char *sound_manager[] = {"/home/blue/.dwm/sound-manager.sh", NULL};
+static const char *bluetooth_manager[] = {"/home/blue/.dwm/bluetooth-manager.sh", NULL};
 static const char *suspend[] = { "/home/blue/.dwm/suspend.sh", NULL };
 static const char *screenshotcmd[] = { "flameshot", "gui", NULL };
 static const char *lockscreen[] = {"slock", NULL };
+static const char *htop[] = { "st", "htop", NULL };
 
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -121,7 +124,10 @@ static Key keys[] = {
 
 	{ MODKEY|ControlMask,           XK_l,      spawn,          {.v = lockscreen } }, // 锁屏
 	{ MODKEY|ControlMask,           XK_n,      spawn,          {.v = network_manager } }, // 网络控制
+	{ MODKEY|ControlMask,           XK_m,      spawn,          {.v = sound_manager } }, // 声音控制
+	{ MODKEY|ControlMask,           XK_b,      spawn,          {.v = bluetooth_manager } }, // bluetooth控制
 	{ MODKEY|ControlMask,           XK_s,      spawn,          {.v = suspend } }, // 待机
+	{ MODKEY|ControlMask,           XK_h,      spawn,          {.v = htop } }, // cpu and memory information
 
 	{ MODKEY|ShiftMask,             XK_Return, zoom,           {0} }, // 当前和上一个窗口切换
 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } }, // 平铺所有窗口

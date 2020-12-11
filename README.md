@@ -16,3 +16,4 @@
 - [HiDPI](https://wiki.archlinux.org/index.php/HiDPI_(%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87))
 - [Set Keyboard Repeat Delay and Rate](https://wiki.gentoo.org/wiki/Set_Keyboard_Repeat_Delay_and_Rate)
 - [LukeSmithxyz/dwmblocks](https://github.com/lukesmithxyz/dwmblocks)
+- [How do I enable sound in this fresh Arch install?](https://unix.stackexchange.com/questions/104270/how-do-i-enable-sound-in-this-fresh-arch-install)
