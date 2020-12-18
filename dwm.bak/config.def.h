@@ -38,14 +38,7 @@ static const unsigned int alphas[][3]      = {
 /* tagging */
 static const char *tags[] = { "", "", "", "", "", "", "", "", "" };
 
-static const Rule rules[0] = {
-	/* xprop(1):
-	 *	WM_CLASS(STRING) = instance, class
-	 *	WM_NAME(STRING) = title
-	 */
-	/* class                  instance                title       tags mask     isfloating   monitor */
-	// { "Gimp",                 "gimp",                 NULL,       0,            1,           -1 },
-};
+static const Rule rules[0] = { };
 
 /* layout(s) */
 static const float mfact     = 0.5; /* factor of master area size [0.05..0.95] */
@@ -56,7 +49,7 @@ static const Layout layouts[] = {
 	/* symbol     arrange function */
 	{ "[=]",      tile },    /* first entry is default */
 	{ "[~]",      NULL },    /* no layout function means floating behavior */
-	{ "",   monocle },
+	{ "[M]",   monocle },
 };
 
 /* key definitions */

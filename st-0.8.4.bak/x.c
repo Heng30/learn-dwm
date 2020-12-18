@@ -158,8 +158,6 @@ static void xhints(void);
 static int xloadcolor(int, const char *, Color *);
 static int xloadfont(Font *, FcPattern *);
 static void xloadfonts(char *, double);
-static int xloadsparefont(FcPattern *, int);
-static void xloadsparefonts(void);
 static void xunloadfont(Font *);
 static void xunloadfonts(void);
 static void xsetenv(void);
@@ -257,10 +255,6 @@ static char *opt_name  = NULL;
 static char *opt_title = NULL;
 
 static int oldbutton = 3; /* button event on startup: 3 = release */
-static int cursorblinks = 0;
-
-static Cursor cursor;
-static XColor xmousefg, xmousebg;
 
 void
 clipcopy(const Arg *dummy)
@@ -314,7 +308,6 @@ zoomabs(const Arg *arg)
 {
 	xunloadfonts();
 	xloadfonts(usedfont, arg->f);
-	xloadsparefonts();
 	cresize(0, 0);
 	redraw();
 	xhints();
@@ -1035,101 +1028,6 @@ xloadfonts(char *fontstr, double fontsize)
 	FcPatternDestroy(pattern);
 }
 
-int
-xloadsparefont(FcPattern *pattern, int flags)
-{
-	FcPattern *match;
-	FcResult result;
-
-	match = FcFontMatch(NULL, pattern, &result);
-	if (!match) {
-		return 1;
-	}
-
-	if (!(frc[frclen].font = XftFontOpenPattern(xw.dpy, match))) {
-		FcPatternDestroy(match);
-		return 1;
-	}
-
-	frc[frclen].flags = flags;
-	/* Believe U+0000 glyph will present in each default font */
-	frc[frclen].unicodep = 0;
-	frclen++;
-
-	return 0;
-}
-
-void
-xloadsparefonts(void)
-{
-	FcPattern *pattern;
-	double sizeshift, fontval;
-	int fc;
-	char **fp;
-
-	if (frclen != 0)
-		die("can't embed spare fonts. cache isn't empty");
-
-	/* Calculate count of spare fonts */
-	fc = sizeof(font2) / sizeof(*font2);
-	if (fc == 0)
-		return;
-
-	/* Allocate memory for cache entries. */
-	if (frccap < 4 * fc) {
-		frccap += 4 * fc - frccap;
-		frc = xrealloc(frc, frccap * sizeof(Fontcache));
-	}
-
-	for (fp = font2; fp - font2 < fc; ++fp) {
-
-		if (**fp == '-')
-			pattern = XftXlfdParse(*fp, False, False);
-		else
-			pattern = FcNameParse((FcChar8 *)*fp);
-
-		if (!pattern)
-			die("can't open spare font %s\n", *fp);
-
-		if (defaultfontsize > 0) {
-			sizeshift = usedfontsize - defaultfontsize;
-			if (sizeshift != 0 &&
-					FcPatternGetDouble(pattern, FC_PIXEL_SIZE, 0, &fontval) ==
-					FcResultMatch) {
-				fontval += sizeshift;
-				FcPatternDel(pattern, FC_PIXEL_SIZE);
-				FcPatternDel(pattern, FC_SIZE);
-				FcPatternAddDouble(pattern, FC_PIXEL_SIZE, fontval);
-			}
-		}
-
-		FcPatternAddBool(pattern, FC_SCALABLE, 1);
-
-		FcConfigSubstitute(NULL, pattern, FcMatchPattern);
-		XftDefaultSubstitute(xw.dpy, xw.scr, pattern);
-
-		if (xloadsparefont(pattern, FRC_NORMAL))
-			die("can't open spare font %s\n", *fp);
-
-		FcPatternDel(pattern, FC_SLANT);
-		FcPatternAddInteger(pattern, FC_SLANT, FC_SLANT_ITALIC);
-		if (xloadsparefont(pattern, FRC_ITALIC))
-			die("can't open spare font %s\n", *fp);
-
-		FcPatternDel(pattern, FC_WEIGHT);
-		FcPatternAddInteger(pattern, FC_WEIGHT, FC_WEIGHT_BOLD);
-		if (xloadsparefont(pattern, FRC_ITALICBOLD))
-			die("can't open spare font %s\n", *fp);
-
-		FcPatternDel(pattern, FC_SLANT);
-		FcPatternAddInteger(pattern, FC_SLANT, FC_SLANT_ROMAN);
-		if (xloadsparefont(pattern, FRC_BOLD))
-			die("can't open spare font %s\n", *fp);
-
-		FcPatternDestroy(pattern);
-	}
-}
-
 void
 xunloadfont(Font *f)
 {
@@ -1210,8 +1108,10 @@ void
 xinit(int cols, int rows)
 {
 	XGCValues gcvalues;
+	Cursor cursor;
 	Window parent;
 	pid_t thispid = getpid();
+	XColor xmousefg, xmousebg;
 	XWindowAttributes attr;
 	XVisualInfo vis;
 
@@ -1236,9 +1136,6 @@ xinit(int cols, int rows)
 
 	usedfont = (opt_font == NULL)? font : opt_font;
 	xloadfonts(usedfont, 0);
-
-	/* spare fonts */
-	xloadsparefonts();
 
 	/* colors */
 	xw.cmap = XCreateColormap(xw.dpy, parent, xw.vis, None);
@@ -1500,6 +1397,10 @@ xdrawglyphfontspecs(const XftGlyphFontSpec *specs, Glyph base, int len, int x, i
 		bg = &dc.col[base.bg];
 	}
 
+	/* Change basic system colors [0-7] to bright system colors [8-15] */
+	if ((base.mode & ATTR_BOLD_FAINT) == ATTR_BOLD && BETWEEN(base.fg, 0, 7))
+		fg = &dc.col[base.fg + 8];
+
 	if (IS_SET(MODE_REVERSE)) {
 		if (fg == &dc.col[defaultfg]) {
 			fg = &dc.col[defaultbg];
@@ -1642,19 +1543,16 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
 	/* draw the new one */
 	if (IS_SET(MODE_FOCUSED)) {
 		switch (win.cursor) {
-		case 0: /* Blinking block */
-		case 1: /* Blinking block (default) */
-			if (IS_SET(MODE_BLINK))
-				break;
+		case 7: /* st extension */
+			g.u = 0x2603; /* snowman (U+2603) */
 			/* FALLTHROUGH */
-		case 2: /* Steady block */
+		case 0: /* Blinking Block */
+		case 1: /* Blinking Block (Default) */
+		case 2: /* Steady Block */
 			xdrawglyph(g, cx, cy);
 			break;
-		case 3: /* Blinking underline */
-			if (IS_SET(MODE_BLINK))
-				break;
-			/* FALLTHROUGH */
-		case 4: /* Steady underline */
+		case 3: /* Blinking Underline */
+		case 4: /* Steady Underline */
 			XftDrawRect(xw.draw, &drawcol,
 					borderpx + cx * win.cw,
 					borderpx + (cy + 1) * win.ch - \
@@ -1662,22 +1560,11 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
 					win.cw, cursorthickness);
 			break;
 		case 5: /* Blinking bar */
-			if (IS_SET(MODE_BLINK))
-				break;
-			/* FALLTHROUGH */
 		case 6: /* Steady bar */
 			XftDrawRect(xw.draw, &drawcol,
 					borderpx + cx * win.cw,
 					borderpx + cy * win.ch,
 					cursorthickness, win.ch);
-			break;
-		case 7: /* Blinking st cursor */
-			if (IS_SET(MODE_BLINK))
-				break;
-			/* FALLTHROUGH */
-		case 8: /* Steady st cursor */
-			g.u = stcursor;
-			xdrawglyph(g, cx, cy);
 			break;
 		}
 	} else {
@@ -1725,8 +1612,6 @@ xsettitle(char *p)
 int
 xstartdraw(void)
 {
-	if (IS_SET(MODE_VISIBLE))
-		XCopyArea(xw.dpy, xw.win, xw.buf, dc.gc, 0, 0, win.w, win.h, 0, 0);
 	return IS_SET(MODE_VISIBLE);
 }
 
@@ -1815,12 +1700,6 @@ xsetmode(int set, unsigned int flags)
 {
 	int mode = win.mode;
 	MODBIT(win.mode, set, flags);
-        if (flags & MODE_MOUSE) {
-                if (win.mode & MODE_MOUSE)
-                        XUndefineCursor(xw.dpy, xw.win);
-                else
-                        XDefineCursor(xw.dpy, xw.win, cursor);
-        }
 	if ((win.mode & MODE_REVERSE) != (mode & MODE_REVERSE))
 		redraw();
 }
@@ -1828,12 +1707,9 @@ xsetmode(int set, unsigned int flags)
 int
 xsetcursor(int cursor)
 {
-	if (!BETWEEN(cursor, 0, 8)) /* 7-8: st extensions */
+	if (!BETWEEN(cursor, 0, 7)) /* 7: st extension */
 		return 1;
 	win.cursor = cursor;
-	cursorblinks = win.cursor == 0 || win.cursor == 1 ||
-	               win.cursor == 3 || win.cursor == 5 ||
-	               win.cursor == 7;
 	return 0;
 }
 
@@ -2077,10 +1953,6 @@ run(void)
 		if (FD_ISSET(ttyfd, &rfd) || xev) {
 			if (!drawing) {
 				trigger = now;
-				if (IS_SET(MODE_BLINK)) {
-					win.mode ^= MODE_BLINK;
-				}
-				lastblink = now;
 				drawing = 1;
 			}
 			timeout = (maxlatency - TIMEDIFF(now, trigger)) \
@@ -2091,7 +1963,7 @@ run(void)
 
 		/* idle detected or maxlatency exhausted -> draw */
 		timeout = -1;
-		if (blinktimeout && (cursorblinks || tattrset(ATTR_BLINK))) {
+		if (blinktimeout && tattrset(ATTR_BLINK)) {
 			timeout = blinktimeout - TIMEDIFF(now, lastblink);
 			if (timeout <= 0) {
 				if (-timeout > blinktimeout) /* start visible */
@@ -2127,7 +1999,7 @@ main(int argc, char *argv[])
 {
 	xw.l = xw.t = 0;
 	xw.isfixed = False;
-	xsetcursor(cursorstyle);
+	xsetcursor(cursorshape);
 
 	ARGBEGIN {
 	case 'a':
@@ -2194,27 +2066,4 @@ run:
 	run();
 
 	return 0;
-}
-
-void
-opencopied(const Arg *arg)
-{
-	const size_t max_cmd = 2048;
-	const char *clip = xsel.clipboard;
-	if(!clip) {
-		fprintf(stderr, "Warning: nothing copied to clipboard\n");
-		return;
-	}
-
-	/* account for space/quote (3) and \0 (1) and & (1) */
-	char cmd[max_cmd + strlen(clip) + 5];
-	strncpy(cmd, (char *)arg->v, max_cmd);
-	cmd[max_cmd] = '\0';
-
-	strcat(cmd, " \"");
-	strcat(cmd, clip);
-	strcat(cmd, "\"");
-	strcat(cmd, "&");
-
-	system(cmd);
 }
