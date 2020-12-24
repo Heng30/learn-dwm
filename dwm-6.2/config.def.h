@@ -82,6 +82,7 @@ static const char *network_manager[] = {"/home/blue/.dwm/network-manager.sh", NU
 static const char *sound_manager[] = {"/home/blue/.dwm/sound-manager.sh", NULL};
 static const char *bluetooth_manager[] = {"/home/blue/.dwm/bluetooth-manager.sh", NULL};
 static const char *suspend[] = { "/home/blue/.dwm/suspend.sh", NULL };
+static const char *change_wallpaper[] = { "/home/blue/.dwm/change_wallpaper.sh", NULL };
 static const char *screenshotcmd[] = { "flameshot", "gui", NULL };
 static const char *lockscreen[] = {"slock", NULL };
 static const char *htop[] = { "st", "htop", NULL };
@@ -117,6 +118,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_p,      togglescratch,  {.v = scratchpadcmd } }, // 弹出一个临时窗口
 	{ MODKEY,                       XK_s,      spawn,          {.v = screenshotcmd } }, // 屏幕截图
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} }, // 设置窗口模式
+	{ MODKEY,                       XK_w,      spawn,          {.v = change_wallpaper } }, // 更改壁纸
 
 	{ MODKEY|ControlMask,           XK_l,      spawn,          {.v = lockscreen } }, // 锁屏
 	{ MODKEY|ControlMask,           XK_n,      spawn,          {.v = network_manager } }, // 网络控制
