@@ -78,6 +78,8 @@ static const char *voldownscript[] = {"/home/blue/.dwm/vol-down.sh", NULL};
 static const char *voltogglescript[] = {"/home/blue/.dwm/vol-toggle.sh", NULL};
 static const char *backlight_up[] = {"/home/blue/.dwm/backlight-up.sh", NULL};
 static const char *backlight_down[] = {"/home/blue/.dwm/backlight-down.sh", NULL};
+static const char *redshift_up[] = {"/home/blue/.dwm/redshift-up.sh", NULL};
+static const char *redshift_down[] = {"/home/blue/.dwm/redshift-down.sh", NULL};
 static const char *network_manager[] = {"/home/blue/.dwm/network-manager.sh", NULL};
 static const char *sound_manager[] = {"/home/blue/.dwm/sound-manager.sh", NULL};
 static const char *bluetooth_manager[] = {"/home/blue/.dwm/bluetooth-manager.sh", NULL};
@@ -120,12 +122,14 @@ static Key keys[] = {
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} }, // 设置窗口模式
 	{ MODKEY,                       XK_w,      spawn,          {.v = change_wallpaper } }, // 更改壁纸
 
+	{ MODKEY|ControlMask,           XK_d,      spawn,          {.v = redshift_down } },
+	{ MODKEY|ControlMask,           XK_h,      spawn,          {.v = htop } }, // cpu and memory information
 	{ MODKEY|ControlMask,           XK_l,      spawn,          {.v = lockscreen } }, // 锁屏
 	{ MODKEY|ControlMask,           XK_n,      spawn,          {.v = network_manager } }, // 网络控制
 	{ MODKEY|ControlMask,           XK_m,      spawn,          {.v = sound_manager } }, // 声音控制
 	{ MODKEY|ControlMask,           XK_b,      spawn,          {.v = bluetooth_manager } }, // bluetooth控制
 	{ MODKEY|ControlMask,           XK_s,      spawn,          {.v = suspend } }, // 待机
-	{ MODKEY|ControlMask,           XK_h,      spawn,          {.v = htop } }, // cpu and memory information
+	{ MODKEY|ControlMask,           XK_u,      spawn,          {.v = redshift_up } },
 
 	{ MODKEY|ShiftMask,             XK_Return, zoom,           {0} }, // 当前和上一个窗口切换
 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } }, // 平铺所有窗口
