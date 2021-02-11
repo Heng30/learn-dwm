@@ -17,3 +17,4 @@
 - [Set Keyboard Repeat Delay and Rate](https://wiki.gentoo.org/wiki/Set_Keyboard_Repeat_Delay_and_Rate)
 - [LukeSmithxyz/dwmblocks](https://github.com/lukesmithxyz/dwmblocks)
 - [How do I enable sound in this fresh Arch install?](https://unix.stackexchange.com/questions/104270/how-do-i-enable-sound-in-this-fresh-arch-install)
+- [How to install & configure nvidia driver on arch linux](https://howto.lintel.in/install-nvidia-arch-linux/)
