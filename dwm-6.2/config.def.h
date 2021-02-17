@@ -86,6 +86,8 @@ static const char *bluetooth_manager[] = {"/home/blue/.dwm/bluetooth-manager.sh"
 static const char *suspend[] = { "/home/blue/.dwm/suspend.sh", NULL };
 static const char *change_wallpaper[] = { "/home/blue/.dwm/change_wallpaper.sh", NULL };
 static const char *keyboard_setup[] = { "/home/blue/.dwm/keyboard-setup.sh", NULL };
+static const char *pomodoro_start[] = { "/home/blue/.dwm/pomodoro-start.sh", NULL };
+static const char *pomodoro_stop[] = { "/home/blue/.dwm/pomodoro-stop.sh", NULL };
 static const char *screenshotcmd[] = { "flameshot", "gui", NULL };
 static const char *lockscreen[] = {"slock", NULL };
 static const char *htop[] = { "st", "htop", NULL };
@@ -123,6 +125,8 @@ static Key keys[] = {
 	{ MODKEY,                       XK_s,      spawn,          {.v = screenshotcmd } }, // 屏幕截图
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} }, // 设置窗口模式
 	{ MODKEY,                       XK_w,      spawn,          {.v = change_wallpaper } }, // 更改壁纸
+	{ MODKEY,                       XK_x,      spawn,          {.v = pomodoro_stop } }, // 取消番茄时钟
+	{ MODKEY,                       XK_y,      spawn,          {.v = pomodoro_start } }, // 启动番茄时钟
 
 	{ MODKEY|ControlMask,           XK_d,      spawn,          {.v = redshift_down } },
 	{ MODKEY|ControlMask,           XK_h,      spawn,          {.v = htop } }, // cpu and memory information
