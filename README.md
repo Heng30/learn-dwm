@@ -18,3 +18,4 @@
 - [LukeSmithxyz/dwmblocks](https://github.com/lukesmithxyz/dwmblocks)
 - [How do I enable sound in this fresh Arch install?](https://unix.stackexchange.com/questions/104270/how-do-i-enable-sound-in-this-fresh-arch-install)
 - [How to install & configure nvidia driver on arch linux](https://howto.lintel.in/install-nvidia-arch-linux/)
+- [Set up a Webcam with Linux](http://www.linuxintro.org/wiki/Set_up_a_Webcam_with_Linux)
