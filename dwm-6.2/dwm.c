@@ -267,6 +267,7 @@ static void tile(Monitor *);
 static void togglebar(const Arg *arg);
 static void togglefloating(const Arg *arg);
 static void togglescratch(const Arg *arg);
+static void togglenote(const Arg *arg);
 static void toggletag(const Arg *arg);
 static void toggleview(const Arg *arg);
 static void togglewin(const Arg *arg);
@@ -352,6 +353,7 @@ struct Pertag {
 };
 
 static unsigned int scratchtag = 1 << LENGTH(tags);
+static unsigned int notetag = 1 << (LENGTH(tags) + 1);
 
 /* compile-time check if all tags fit into an unsigned int bit array. */
 struct NumTags {
@@ -1243,6 +1245,15 @@ void manage(Window w, XWindowAttributes *wa) {
         c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);
     }
 
+    // 设置notepad
+    selmon->tagset[selmon->seltags] &= ~notetag;
+    if (!strcmp(c->name, notepadname)) {
+        c->mon->tagset[c->mon->seltags] |= c->tags = notetag;
+        c->isfloating = True;
+        c->x = c->mon->wx + (c->mon->ww / 2 - WIDTH(c) / 2);
+        c->y = c->mon->wy + (c->mon->wh / 2 - HEIGHT(c) / 2);
+    }
+
     // update window information
     wc.border_width = c->bw;
     XConfigureWindow(dpy, w, CWBorderWidth, &wc);
@@ -2010,10 +2021,14 @@ void sigchld(int unused) {
 void spawn(const Arg *arg) {
     if (arg->v == dmenucmd)
         dmenumon[0] = '0' + selmon->num;
+
     selmon->tagset[selmon->seltags] &= ~scratchtag;
+    selmon->tagset[selmon->seltags] &= ~notetag;
+
     if (fork() == 0) {
         if (dpy)
             close(ConnectionNumber(dpy));
+
         setsid();
         execvp(((char **)arg->v)[0], (char **)arg->v);
         fprintf(stderr, "dwm: execvp %s", ((char **)arg->v)[0]);
@@ -2115,6 +2130,30 @@ void togglescratch(const Arg *arg) {
         }
     } else
         spawn(arg);
+}
+
+void togglenote(const Arg *arg) {
+    Client *c;
+    unsigned int found = 0;
+
+    for (c = selmon->clients; c && !(found = c->tags & notetag); c = c->next)
+        ;
+
+    if (found) {
+        unsigned int newtagset = selmon->tagset[selmon->seltags] ^ notetag;
+        if (newtagset) {
+            selmon->tagset[selmon->seltags] = newtagset;
+            focus(NULL);
+            arrange(selmon);
+        }
+
+        if (ISVISIBLE(c)) {
+            focus(c);
+            restack(selmon);
+        }
+    } else {
+        spawn(arg);
+    }
 }
 
 void toggletag(const Arg *arg) {
