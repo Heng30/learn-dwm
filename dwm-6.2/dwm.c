@@ -21,10 +21,12 @@
  * To understand everything else, start reading main().
  */
 #include <X11/Xatom.h>
+#include <X11/Xft/Xft.h>
 #include <X11/Xlib.h>
 #include <X11/Xproto.h>
 #include <X11/Xutil.h>
 #include <X11/cursorfont.h>
+#include <X11/extensions/Xinerama.h>
 #include <X11/keysym.h>
 #include <errno.h>
 #include <locale.h>
@@ -37,8 +39,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <X11/extensions/Xinerama.h>
-#include <X11/Xft/Xft.h>
 
 #include "drw.h"
 #include "util.h"
@@ -65,7 +65,9 @@
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
+
 enum { SchemeNorm, SchemeSel, SchemeHid };       /* color schemes */
+
 enum {
     NetSupported,
     NetWMName,
@@ -78,6 +80,7 @@ enum {
     NetClientList,
     NetLast
 }; /* EWMH atoms */
+
 enum {
     WMProtocols,
     WMDelete,
@@ -85,6 +88,7 @@ enum {
     WMTakeFocus,
     WMLast
 }; /* default atoms */
+
 enum {
     ClkTagBar,
     ClkLtSymbol,
@@ -157,14 +161,14 @@ struct Monitor {
     unsigned int seltags;
     unsigned int sellt;
     unsigned int tagset[2];
-    int showbar;
-    int topbar;
+    int showbar; // 是否展示状态栏
+    int topbar;  // 状态栏是否在顶端
     int hidsel;
     Client *clients;
     Client *sel;
     Client *stack;
     Monitor *next;
-    Window barwin;
+    Window barwin; // 带状态栏的window
     const Layout *lt[2];
     Pertag *pertag;
 };
@@ -300,7 +304,7 @@ static const char broken[] = "broken";
 static const char dwmdir[] = "dwm";
 static const char localshare[] = ".local/share";
 static char stext[256];
-static int screen;        // default screen
+static int screen;         // default screen
 static int sw, sh;         /* X display screen geometry width, height */
 static int bh, blw = 0;    /* bar geometry */
 static int enablegaps = 1; /* enables gaps, used by togglegaps */
@@ -330,12 +334,13 @@ static int running = 1;
 static Cur *cursor[CurLast];
 static Clr **scheme;
 static Display *dpy; // x window display handler which connect to x server
-static Drw *drw;
+static Drw *drw;     // 可绘制window信息
 static Monitor *mons, *selmon;
 static Window root, wmcheckwin;
 
+// 虚拟window设置
 static int useargb = 0;
-static Visual *visual;
+static Visual *visual; // 虚拟window
 static int depth;
 static Colormap cmap;
 
@@ -564,8 +569,12 @@ void checkotherwm(void) {
     // set up interested events I want
     XSelectInput(dpy, DefaultRootWindow(dpy), SubstructureRedirectMask);
 
-    XSync(dpy, False); // sync event with x server and don't discard other events
-    XSetErrorHandler(xerror); // set X window error callback, will cause program exit
+    // sync event with x server and don't discard other events
+    XSync(dpy, False);
+
+    // set X window error callback, will cause program exit
+    XSetErrorHandler(xerror);
+
     XSync(dpy, False);
 }
 
@@ -779,11 +788,13 @@ void detachstack(Client *c) {
 
     for (tc = &c->mon->stack; *tc && *tc != c; tc = &(*tc)->snext)
         ;
+
     *tc = c->snext;
 
     if (c == c->mon->sel) {
         for (t = c->mon->stack; t && !ISVISIBLE(t); t = t->snext)
             ;
+
         c->mon->sel = t;
     }
 }
@@ -820,7 +831,9 @@ void drawbar(Monitor *m) {
     for (c = m->clients; c; c = c->next) {
         if (ISVISIBLE(c))
             n++;
+
         occ |= c->tags == 255 ? 0 : c->tags;
+
         if (c->isurgent)
             urg |= c->tags;
     }
@@ -1062,6 +1075,7 @@ long getstate(Window w) {
     return result;
 }
 
+// 获取虚拟window的名字
 int gettextprop(Window w, Atom atom, char *text, unsigned int size) {
     char **list = NULL;
     int n;
@@ -1069,9 +1083,12 @@ int gettextprop(Window w, Atom atom, char *text, unsigned int size) {
 
     if (!text || size == 0)
         return 0;
+
     text[0] = '\0';
+
     if (!XGetTextProperty(dpy, w, &name, atom) || !name.nitems)
         return 0;
+
     if (name.encoding == XA_STRING)
         strncpy(text, (char *)name.value, size - 1);
     else {
@@ -1081,6 +1098,7 @@ int gettextprop(Window w, Atom atom, char *text, unsigned int size) {
             XFreeStringList(list);
         }
     }
+
     text[size - 1] = '\0';
     XFree(name.value);
     return 1;
@@ -1113,15 +1131,16 @@ void grabkeys(void) {
     {
         unsigned int i, j;
         unsigned int modifiers[] = {0, LockMask, numlockmask,
-            numlockmask | LockMask};
+                                    numlockmask | LockMask};
         KeyCode code;
 
+        // 设置快捷键
         XUngrabKey(dpy, AnyKey, AnyModifier, root);
         for (i = 0; i < LENGTH(keys); i++)
             if ((code = XKeysymToKeycode(dpy, keys[i].keysym)))
                 for (j = 0; j < LENGTH(modifiers); j++)
                     XGrabKey(dpy, code, keys[i].mod | modifiers[j], root, True,
-                            GrabModeAsync, GrabModeAsync);
+                             GrabModeAsync, GrabModeAsync);
     }
 }
 
@@ -1905,9 +1924,9 @@ void setup(void) {
     if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
         die("no fonts could be loaded.");
 
-    lrpad = drw->fonts->h;
-    bh = drw->fonts->h + 2;
-    updategeom(); // setup monitor
+    lrpad = drw->fonts->h;  // 文本左右padding
+    bh = drw->fonts->h + 2; // bar的高度
+    updategeom();           // setup monitor
 
     /* init atoms */
     utf8string = XInternAtom(dpy, "UTF8_STRING", False);
@@ -2268,6 +2287,7 @@ void unmapnotify(XEvent *e) {
     }
 }
 
+// 更新状态栏
 void updatebars(void) {
     Monitor *m;
     XSetWindowAttributes wa = {.override_redirect = True,
@@ -2291,6 +2311,7 @@ void updatebars(void) {
     }
 }
 
+// 设置bar的位置和moniter的位置
 void updatebarpos(Monitor *m) {
     m->wy = m->my;
     m->wh = m->mh;
@@ -2456,9 +2477,11 @@ void updatesizehints(Client *c) {
         (c->maxw && c->maxh && c->maxw == c->minw && c->maxh == c->minh);
 }
 
+// 更新状态栏
 void updatestatus(void) {
     if (!gettextprop(root, XA_WM_NAME, stext, sizeof(stext)))
         strcpy(stext, "dwm-" VERSION);
+
     drawbar(selmon);
 }
 
@@ -2644,10 +2667,12 @@ int main(int argc, char *argv[]) {
     if (!setlocale(LC_CTYPE, "") || !XSupportsLocale())
         fputs("warning: no locale support\n", stderr);
 
+    // 连接到x server
     if (!(dpy = XOpenDisplay(NULL)))
         die("dwm: cannot open display");
 
-    checkotherwm(); // do some check
+    // 检查是否有其他窗口管理器和设置错误回调
+    checkotherwm();
 
     setup(); // setup environment
 

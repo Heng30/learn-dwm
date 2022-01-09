@@ -26,7 +26,13 @@ echo 'BTC $0' > /tmp/bitcoin_price.dat
 /bin/bahs ~/.dwm/nvidia-gpu-setup.sh &
 
 # start fcitx, 支持中文输入法的框架
-fcitx-autostart &
+fcitx5 &
+
+# 启动翻译
+simdict-baidu &
+
+# 启动todo list
+simtdl &
 
 # 获取窗口名称, 用于设置imwhell
 # xprop WM_CLASS | grep -o '"[^"]*"' | head -n 1

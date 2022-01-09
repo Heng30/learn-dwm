@@ -162,6 +162,7 @@ static void xfont_free(Fnt *font) {
     free(font);
 }
 
+// 设置字体
 Fnt *drw_fontset_create(Drw *drw, const char *fonts[], size_t fontcount) {
     Fnt *cur, *ret = NULL;
     size_t i;
@@ -185,6 +186,7 @@ void drw_fontset_free(Fnt *font) {
     }
 }
 
+// 创建颜色
 void drw_clr_create(Drw *drw, Clr *dest, const char *clrname,
                     unsigned int alpha) {
     if (!drw || !dest || !clrname)
@@ -401,6 +403,7 @@ void drw_font_getexts(Fnt *font, const char *text, unsigned int len,
         *h = font->h;
 }
 
+// 设置鼠标
 Cur *drw_cur_create(Drw *drw, int shape) {
     Cur *cur;
 
