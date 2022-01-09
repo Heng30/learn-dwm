@@ -4,7 +4,6 @@
 import requests
 import json
 
-
 headers = {
     "Accept":
     "text/html,application/xhtml+xml,application/xml;",
@@ -28,26 +27,25 @@ def coinPrice(coins):
         url = 'https://api.alternative.me/v2/ticker/' + coin["name"] + '/'
         try:
             r = s.get(url)
+            data = json.loads(r.text)
+            dataList.append(
+                str(round(data['data'][coin["id"]]["quotes"]["USD"]["price"])))
+            dataList.append(
+                str(round(data['data'][coin["id"]]["quotes"]["USD"]["percentage_change_24h"])) + '%')
         except Exception:
-            continue
-
-        data = json.loads(r.text)
-        dataList.append(
-            str(round(data['data'][coin["id"]]["quotes"]["USD"]["price"])))
-        dataList.append(
-            str(round(data['data'][coin["id"]]["quotes"]["USD"]["percentage_change_24h"])) + '%')
-
+            dataList.append('0')
+            dataList.append('0%')
 
 def fear():
     url = 'https://api.alternative.me/fng/?limit=2'
     try:
         r = s.get(url)
+        data = json.loads(r.text)
+        for j in data['data']:
+            dataList.append(str(j['value']))
     except Exception:
-        return
-
-    data = json.loads(r.text)
-    for j in data['data']:
-        dataList.append(str(j['value']))
+        dataList.append('0')
+        dataList.append('0')
 
 
 if __name__ == '__main__':
