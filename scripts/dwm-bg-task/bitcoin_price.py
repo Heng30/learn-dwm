@@ -4,7 +4,6 @@
 import requests
 import json
 
-dataList = []
 
 headers = {
     "Accept":
@@ -20,12 +19,13 @@ headers = {
                              Chrome/42.0.2311.90 Safari/537.36"
 }
 
+dataList = []
+s = requests.Session()
+s.headers.update(headers)
 
 def coinPrice(coins):
     for coin in coins:
         url = 'https://api.alternative.me/v2/ticker/' + coin["name"] + '/'
-        s = requests.Session()
-        s.headers.update(headers)
         try:
             r = s.get(url)
         except Exception:
@@ -40,8 +40,6 @@ def coinPrice(coins):
 
 def fear():
     url = 'https://api.alternative.me/fng/?limit=2'
-    s = requests.Session()
-    s.headers.update(headers)
     try:
         r = s.get(url)
     except Exception:
