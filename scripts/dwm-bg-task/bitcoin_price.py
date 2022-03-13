@@ -22,6 +22,7 @@ dataList = []
 s = requests.Session()
 s.headers.update(headers)
 
+
 def coinPrice(coins):
     for coin in coins:
         url = 'https://api.alternative.me/v2/ticker/' + coin["name"] + '/'
@@ -30,11 +31,13 @@ def coinPrice(coins):
             data = json.loads(r.text)
             dataList.append(
                 str(round(data['data'][coin["id"]]["quotes"]["USD"]["price"])))
-            dataList.append(
-                str(round(data['data'][coin["id"]]["quotes"]["USD"]["percentage_change_24h"])) + '%')
+            dataList.append("%2s" % str(
+                round(data['data'][coin["id"]]["quotes"]["USD"]
+                      ["percentage_change_24h"])) + '%')
         except Exception:
             dataList.append('0')
             dataList.append('0%')
+
 
 def fear():
     url = 'https://api.alternative.me/fng/?limit=2'

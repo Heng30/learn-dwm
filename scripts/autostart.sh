@@ -17,6 +17,9 @@ echo 'BTC $0' > /tmp/bitcoin_price.dat
 # 开启触摸板点击功能
 /bin/bash ~/.dwm/touchpad-setup.sh &
 
+# 鼠标设置
+/bin/bash ~/.dwm/mouse-setup.sh &
+
 # 开启shadowsock
 /bin/bash ~/.dwm/shadowsock-manager.sh &
 
@@ -29,7 +32,8 @@ echo 'BTC $0' > /tmp/bitcoin_price.dat
 fcitx5 &
 
 # 启动翻译
-simdict-baidu &
+simdict &
+# simdict-baidu &
 
 # 启动todo list
 simtdl &
