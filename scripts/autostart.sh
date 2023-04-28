@@ -26,7 +26,7 @@ echo 'BTC $0' > /tmp/bitcoin_price.dat
 # 设置屏幕色温
 /bin/bash ~/.dwm/redshift-setup.sh &
 
-/bin/bahs ~/.dwm/nvidia-gpu-setup.sh &
+#/bin/bahs ~/.dwm/nvidia-gpu-setup.sh &
 
 # start fcitx, 支持中文输入法的框架
 fcitx5 &
@@ -36,7 +36,12 @@ simdict &
 # simdict-baidu &
 
 # 启动todo list
-simtdl &
+# simtdl &
+
+# 启动cryptoinfo
+cryptoinfo &
+
+# chatbox &
 
 # 获取窗口名称, 用于设置imwhell
 # xprop WM_CLASS | grep -o '"[^"]*"' | head -n 1

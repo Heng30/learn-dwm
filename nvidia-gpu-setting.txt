@@ -97,14 +97,7 @@ Shell
 xrandr --setprovideroutputsource modesetting NVIDIA-0
 xrandr --auto
 exec i3 &>> "/var/log/i3.log"
-1
-2
-3
-xrandr --setprovideroutputsource modesetting NVIDIA-0
-xrandr --auto
-exec i3 &>> "/var/log/i3.log"
+
 Test the GPU processes now
 Using nvidia-smi
-
-
 Using nvtop

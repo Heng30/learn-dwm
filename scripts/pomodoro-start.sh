@@ -1,6 +1,6 @@
 #!/bin/bash
 
-m=25
+m=45
 time=$((m * 60))
 dir=~/private-data/pomodoro
 ymd=$(date +%Y-%m-%d)
