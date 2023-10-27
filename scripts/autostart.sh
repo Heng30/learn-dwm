@@ -35,13 +35,8 @@ fcitx5 &
 simdict &
 # simdict-baidu &
 
-# 启动todo list
-# simtdl &
-
 # 启动cryptoinfo
 cryptoinfo &
-
-# chatbox &
 
 # 获取窗口名称, 用于设置imwhell
 # xprop WM_CLASS | grep -o '"[^"]*"' | head -n 1

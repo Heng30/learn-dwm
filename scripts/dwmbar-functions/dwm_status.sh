@@ -15,8 +15,9 @@ DIR=$(dirname "$LOC")
 . "$DIR/dwm_uptime.sh"
 . "$DIR/dwm_redshift.sh"
 . "$DIR/dwm_pomodoro_running.sh"
+. "$DIR/dwm_ping_blog.sh"
 . "$DIR/dwm_bitcoin_price.sh"
 
-xsetroot -name "|$(dwm_net_type) $(dwm_net_statistics)|$(dwm_sysinfo)|$(dwm_backlight) $(dwm_redshift)|$(dwm_alsa)|$(dwm_bluetooth)|$(dwm_battery)|$(dwm_bitcoin_price)|$(dwm_weather)|$(dwm_uptime) $(dwm_pomodoro_running)|$(dwm_date) "
+xsetroot -name "|$(dwm_net_type) $(dwm_net_statistics)|$(dwm_sysinfo)|$(dwm_backlight) $(dwm_redshift)|$(dwm_alsa)|$(dwm_bluetooth)|$(dwm_battery)|$(dwm_bitcoin_price)|$(dwm_weather)|$(dwm_uptime) $(dwm_pomodoro_running) $(dwm_ping_blog)|$(dwm_date) "
 
 exit

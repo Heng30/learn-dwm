@@ -8,7 +8,8 @@ while true; do
     $DIR/update_weather.sh
     $DIR/check_battery.sh
     $DIR/low_battery_suspend.sh
+    $DIR/ping_blog.sh
 
-	sleep 5m
+	sleep 1m
 done
 
