@@ -36,7 +36,7 @@ simdict &
 # simdict-baidu &
 
 # 启动cryptoinfo
-cryptoinfo &
+cryptoinfo.sh &
 
 # 获取窗口名称, 用于设置imwhell
 # xprop WM_CLASS | grep -o '"[^"]*"' | head -n 1
