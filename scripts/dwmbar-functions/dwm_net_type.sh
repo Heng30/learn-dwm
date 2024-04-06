@@ -11,12 +11,14 @@ function net_type_icon(){
         fi
     fi
 
-    value=$(iwctl station wlan0 show | grep 'State' | awk '{ print $2 }')
-    if [ $value = "connected" ];then
-        printf "📶 "
-    else
-        printf "❎"
-    fi
+    printf "📶 "
+
+    # value=$(iwctl station wlan0 show | grep 'State' | awk '{ print $2 }')
+    # if [ $value = "connected" ];then
+    #     printf "📶 "
+    # else
+    #     printf "❎"
+    # fi
 }
 
 function net_name() {

@@ -39,7 +39,7 @@ static const unsigned int alphas[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "🗗 ", "🖹 ", "3", "4", "5", "🎧", "📺", "🖺", "🌏" };
+static const char *tags[] = { "🗗 ", "2 ", "3", "4", "5", "🎧", "📺", "🖺", "🌏" };
 
 static const Rule rules[] = {
     /* class            instance            title       tags mask     isfloating   monitor */
